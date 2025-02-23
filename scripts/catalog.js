@@ -1,6 +1,18 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const productsGrid = document.querySelector('.products-grid');
-    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const apiUrl = 'http://localhost:3000/api';
+
+    // Загрузка товаров с сервера
+    async function loadProducts() {
+        try {
+            const response = await fetch(`${apiUrl}/products`);
+            const products = await response.json();
+            renderProducts(products);
+        } catch (error) {
+            console.error('Ошибка при загрузке товаров:', error);
+            productsGrid.innerHTML = '<p>Ошибка при загрузке товаров</p>';
+        }
+    }
 
     // Отображение товаров
     function renderProducts(filteredProducts = products) {
@@ -41,5 +53,5 @@ document.addEventListener('DOMContentLoaded', function() {
     searchInput.addEventListener('input', filterProducts);
 
     // Инициализация страницы
-    renderProducts();
+    await loadProducts();
 }); 

@@ -1,8 +1,8 @@
 class ProductManager {
     constructor() {
-        this.products = JSON.parse(localStorage.getItem('products')) || [];
+        this.apiUrl = 'http://localhost:3000/api';
         this.initEventListeners();
-        this.renderProducts();
+        this.loadProducts();
     }
 
     initEventListeners() {
@@ -63,12 +63,22 @@ class ProductManager {
         }
     }
 
-    saveProduct() {
+    async loadProducts() {
+        try {
+            const response = await fetch(`${this.apiUrl}/products`);
+            this.products = await response.json();
+            this.renderProducts();
+        } catch (error) {
+            console.error('Ошибка при загрузке товаров:', error);
+            alert('Ошибка при загрузке товаров');
+        }
+    }
+
+    async saveProduct() {
         const form = document.getElementById('productForm');
         const productId = form.elements.productId.value;
         
         const product = {
-            id: productId || Date.now().toString(),
             name: form.elements.name.value,
             category: form.elements.category.value,
             price: parseFloat(form.elements.price.value),
@@ -77,33 +87,48 @@ class ProductManager {
             image: this.currentImage || 'images/placeholder.jpg'
         };
 
-        if (productId) {
-            // Обновление существующего товара
-            const index = this.products.findIndex(p => p.id === productId);
-            if (index !== -1) {
-                this.products[index] = { ...this.products[index], ...product };
+        try {
+            let response;
+            if (productId) {
+                response = await fetch(`${this.apiUrl}/products/${productId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(product)
+                });
+            } else {
+                response = await fetch(`${this.apiUrl}/products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(product)
+                });
             }
-        } else {
-            // Добавление нового товара
-            this.products.push(product);
-        }
 
-        this.saveToLocalStorage();
-        this.renderProducts();
-        this.hideModal();
-        this.currentImage = null;
+            if (!response.ok) throw new Error('Ошибка при сохранении товара');
+
+            await this.loadProducts();
+            this.hideModal();
+            this.currentImage = null;
+        } catch (error) {
+            console.error('Ошибка при сохранении товара:', error);
+            alert('Ошибка при сохранении товара');
+        }
     }
 
-    deleteProduct(productId) {
+    async deleteProduct(productId) {
         if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-            this.products = this.products.filter(p => p.id !== productId);
-            this.saveToLocalStorage();
-            this.renderProducts();
-        }
-    }
+            try {
+                const response = await fetch(`${this.apiUrl}/products/${productId}`, {
+                    method: 'DELETE'
+                });
 
-    saveToLocalStorage() {
-        localStorage.setItem('products', JSON.stringify(this.products));
+                if (!response.ok) throw new Error('Ошибка при удалении товара');
+
+                await this.loadProducts();
+            } catch (error) {
+                console.error('Ошибка при удалении товара:', error);
+                alert('Ошибка при удалении товара');
+            }
+        }
     }
 
     renderProducts() {
