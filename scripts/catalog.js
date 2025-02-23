@@ -1,16 +1,27 @@
 document.addEventListener('DOMContentLoaded', async function() {
     const productsGrid = document.querySelector('.products-grid');
     const apiUrl = 'http://localhost:3000/api';
+    let products = []; // Добавим глобальную переменную products
 
     // Загрузка товаров с сервера
     async function loadProducts() {
         try {
             const response = await fetch(`${apiUrl}/products`);
-            const products = await response.json();
+            if (!response.ok) throw new Error('Ошибка сервера');
+            products = await response.json(); // Сохраняем товары в переменную
             renderProducts(products);
         } catch (error) {
             console.error('Ошибка при загрузке товаров:', error);
-            productsGrid.innerHTML = '<p>Ошибка при загрузке товаров</p>';
+            productsGrid.innerHTML = `
+                <div class="error-message">
+                    <p>Ошибка при загрузке товаров. Пожалуйста, проверьте:</p>
+                    <ul>
+                        <li>Запущен ли сервер (npm start в папке server)</li>
+                        <li>Доступен ли адрес ${apiUrl}</li>
+                    </ul>
+                    <button onclick="window.location.reload()">Попробовать снова</button>
+                </div>
+            `;
         }
     }
 
