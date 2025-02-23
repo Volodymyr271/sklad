@@ -1,19 +1,8 @@
 class ProductManager {
-    constructor() {
-        this.loadProducts();
+    async init() {
+        this.products = await DataStore.getProducts();
         this.initEventListeners();
-    }
-
-    async loadProducts() {
-        try {
-            const response = await fetch('../data/products.json');
-            const data = await response.json();
-            this.products = data.products;
-            this.renderProducts();
-        } catch (error) {
-            console.error('Ошибка загрузки товаров:', error);
-            this.products = [];
-        }
+        this.renderProducts();
     }
 
     initEventListeners() {
@@ -74,7 +63,7 @@ class ProductManager {
         }
     }
 
-    saveProduct() {
+    async saveProduct() {
         const form = document.getElementById('productForm');
         const productId = form.elements.productId.value;
         
@@ -89,47 +78,28 @@ class ProductManager {
         };
 
         if (productId) {
-            // Обновление существующего товара
             const index = this.products.findIndex(p => p.id === productId);
             if (index !== -1) {
                 this.products[index] = { ...this.products[index], ...product };
             }
         } else {
-            // Добавление нового товара
             this.products.push(product);
         }
 
-        this.saveToLocalStorage();
+        await DataStore.saveProducts(this.products);
         this.renderProducts();
         this.hideModal();
         this.currentImage = null;
-
-        // Создаем файл для скачивания с обновленными данными
-        const dataStr = JSON.stringify({ products: this.products }, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(dataBlob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'products.json';
-        a.click();
-        
-        URL.revokeObjectURL(url);
-        
-        showNotification('Товар сохранен. Скачайте и обновите файл products.json в репозитории');
+        showNotification('Товар успешно сохранен');
     }
 
     deleteProduct(productId) {
         if (confirm('Вы уверены, что хотите удалить этот товар?')) {
             this.products = this.products.filter(p => p.id !== productId);
-            this.saveToLocalStorage();
+            DataStore.saveProducts(this.products);
             this.renderProducts();
             showNotification('Товар успешно удален');
         }
-    }
-
-    saveToLocalStorage() {
-        localStorage.setItem('products', JSON.stringify(this.products));
     }
 
     renderProducts() {

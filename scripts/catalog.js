@@ -1,24 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
     const productsGrid = document.querySelector('.products-grid');
-    
-    // Загружаем данные из JSON-файла
-    async function loadProducts() {
-        try {
-            const response = await fetch('../data/products.json');
-            const data = await response.json();
-            return data.products;
-        } catch (error) {
-            console.error('Ошибка загрузки товаров:', error);
-            return [];
-        }
-    }
+    let products = await DataStore.getProducts();
 
-    const products = await loadProducts();
-    
-    // Сохраняем в localStorage для работы корзины
-    localStorage.setItem('products', JSON.stringify(products));
-
-    // Отображение товаров
     function renderProducts(filteredProducts = products) {
         productsGrid.innerHTML = filteredProducts.map(product => `
             <div class="product-card" data-category="${product.category}" data-id="${product.id}">
@@ -47,6 +30,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
         });
     }
+
+    // Слушаем обновления данных
+    window.addEventListener('productsUpdated', function() {
+        products = DataStore.getProducts();
+        renderProducts();
+    });
 
     // Фильтрация товаров
     const categoryFilter = document.getElementById('categoryFilter');

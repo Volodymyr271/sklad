@@ -3,9 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchButton = document.querySelector('.warehouse-search button');
     const tableBody = document.querySelector('.warehouse-table tbody');
     
-    // Загрузка товаров из localStorage
-    function loadWarehouseData() {
-        const products = JSON.parse(localStorage.getItem('products')) || [];
+    function renderWarehouse() {
+        const products = DataStore.getProducts();
         
         tableBody.innerHTML = products.map(product => `
             <tr>
@@ -18,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
             </tr>
         `).join('');
     }
+
+    // Слушаем обновления данных
+    window.addEventListener('productsUpdated', renderWarehouse);
 
     function searchProducts() {
         const searchTerm = searchInput.value.toLowerCase();
@@ -42,6 +44,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Загружаем данные при загрузке страницы
-    loadWarehouseData();
+    renderWarehouse();
 }); 
