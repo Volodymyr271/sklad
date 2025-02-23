@@ -1,28 +1,29 @@
 document.addEventListener('DOMContentLoaded', async function() {
     const productsGrid = document.querySelector('.products-grid');
-    const apiUrl = 'http://localhost:3000/api';
-    let products = []; // Добавим глобальную переменную products
-
-    // Загрузка товаров с сервера
-    async function loadProducts() {
-        try {
-            const response = await fetch(`${apiUrl}/products`);
-            if (!response.ok) throw new Error('Ошибка сервера');
-            products = await response.json(); // Сохраняем товары в переменную
-            renderProducts(products);
-        } catch (error) {
-            console.error('Ошибка при загрузке товаров:', error);
-            productsGrid.innerHTML = `
-                <div class="error-message">
-                    <p>Ошибка при загрузке товаров. Пожалуйста, проверьте:</p>
-                    <ul>
-                        <li>Запущен ли сервер (npm start в папке server)</li>
-                        <li>Доступен ли адрес ${apiUrl}</li>
-                    </ul>
-                    <button onclick="window.location.reload()">Попробовать снова</button>
-                </div>
-            `;
+    let products = JSON.parse(localStorage.getItem('products')) || [
+        {
+            id: "1",
+            name: "Смартфон XYZ",
+            category: "electronics",
+            price: "29999",
+            quantity: 10,
+            description: "Современный смартфон с отличной камерой",
+            image: "images/product1.jpg"
+        },
+        {
+            id: "2",
+            name: "Ноутбук ABC",
+            category: "electronics",
+            price: "49999",
+            quantity: 5,
+            description: "Мощный ноутбук для работы и игр",
+            image: "images/product2.jpg"
         }
+    ];
+
+    // Сохраняем начальные товары, если хранилище пустое
+    if (!localStorage.getItem('products')) {
+        localStorage.setItem('products', JSON.stringify(products));
     }
 
     // Отображение товаров
@@ -38,6 +39,21 @@ document.addEventListener('DOMContentLoaded', async function() {
                 </button>
             </div>
         `).join('');
+
+        // Добавляем обработчики для кнопок
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.product-card');
+                const product = {
+                    id: card.dataset.id,
+                    name: card.querySelector('h3').textContent,
+                    price: card.querySelector('.price').textContent,
+                    image: card.querySelector('img').src
+                };
+                cart.addItem(product);
+                showNotification('Товар добавлен в корзину');
+            });
+        });
     }
 
     // Фильтрация товаров
@@ -64,5 +80,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     searchInput.addEventListener('input', filterProducts);
 
     // Инициализация страницы
-    await loadProducts();
-}); 
+    renderProducts();
+});
+
+// Функция для отображения уведомлений
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+} 
