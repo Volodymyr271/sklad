@@ -1,8 +1,19 @@
 class ProductManager {
     constructor() {
-        this.products = JSON.parse(localStorage.getItem('products')) || [];
+        this.loadProducts();
         this.initEventListeners();
-        this.renderProducts();
+    }
+
+    async loadProducts() {
+        try {
+            const response = await fetch('../data/products.json');
+            const data = await response.json();
+            this.products = data.products;
+            this.renderProducts();
+        } catch (error) {
+            console.error('Ошибка загрузки товаров:', error);
+            this.products = [];
+        }
     }
 
     initEventListeners() {
@@ -92,7 +103,20 @@ class ProductManager {
         this.renderProducts();
         this.hideModal();
         this.currentImage = null;
-        showNotification('Товар успешно сохранен');
+
+        // Создаем файл для скачивания с обновленными данными
+        const dataStr = JSON.stringify({ products: this.products }, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'products.json';
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        
+        showNotification('Товар сохранен. Скачайте и обновите файл products.json в репозитории');
     }
 
     deleteProduct(productId) {

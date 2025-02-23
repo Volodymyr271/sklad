@@ -1,30 +1,22 @@
 document.addEventListener('DOMContentLoaded', async function() {
     const productsGrid = document.querySelector('.products-grid');
-    let products = JSON.parse(localStorage.getItem('products')) || [
-        {
-            id: "1",
-            name: "Смартфон XYZ",
-            category: "electronics",
-            price: "29999",
-            quantity: 10,
-            description: "Современный смартфон с отличной камерой",
-            image: "images/product1.jpg"
-        },
-        {
-            id: "2",
-            name: "Ноутбук ABC",
-            category: "electronics",
-            price: "49999",
-            quantity: 5,
-            description: "Мощный ноутбук для работы и игр",
-            image: "images/product2.jpg"
+    
+    // Загружаем данные из JSON-файла
+    async function loadProducts() {
+        try {
+            const response = await fetch('../data/products.json');
+            const data = await response.json();
+            return data.products;
+        } catch (error) {
+            console.error('Ошибка загрузки товаров:', error);
+            return [];
         }
-    ];
-
-    // Сохраняем начальные товары, если хранилище пустое
-    if (!localStorage.getItem('products')) {
-        localStorage.setItem('products', JSON.stringify(products));
     }
+
+    const products = await loadProducts();
+    
+    // Сохраняем в localStorage для работы корзины
+    localStorage.setItem('products', JSON.stringify(products));
 
     // Отображение товаров
     function renderProducts(filteredProducts = products) {

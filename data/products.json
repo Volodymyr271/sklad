@@ -1,0 +1,22 @@
+{
+    "products": [
+        {
+            "id": "1",
+            "name": "Смартфон XYZ",
+            "category": "electronics",
+            "price": "29999",
+            "quantity": 10,
+            "description": "Современный смартфон с отличной камерой",
+            "image": "images/product1.jpg"
+        },
+        {
+            "id": "2",
+            "name": "Ноутбук ABC",
+            "category": "electronics",
+            "price": "49999",
+            "quantity": 5,
+            "description": "Мощный ноутбук для работы и игр",
+            "image": "images/product2.jpg"
+        }
+    ]
+} 
