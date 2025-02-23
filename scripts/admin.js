@@ -1,8 +1,8 @@
 class ProductManager {
     constructor() {
-        this.apiUrl = 'http://localhost:3000/api';
+        this.products = JSON.parse(localStorage.getItem('products')) || [];
         this.initEventListeners();
-        this.loadProducts();
+        this.renderProducts();
     }
 
     initEventListeners() {
@@ -63,72 +63,49 @@ class ProductManager {
         }
     }
 
-    async loadProducts() {
-        try {
-            const response = await fetch(`${this.apiUrl}/products`);
-            this.products = await response.json();
-            this.renderProducts();
-        } catch (error) {
-            console.error('Ошибка при загрузке товаров:', error);
-            alert('Ошибка при загрузке товаров');
-        }
-    }
-
-    async saveProduct() {
+    saveProduct() {
         const form = document.getElementById('productForm');
         const productId = form.elements.productId.value;
         
         const product = {
+            id: productId || Date.now().toString(),
             name: form.elements.name.value,
             category: form.elements.category.value,
-            price: parseFloat(form.elements.price.value),
+            price: form.elements.price.value,
             quantity: parseInt(form.elements.quantity.value),
             description: form.elements.description.value,
             image: this.currentImage || 'images/placeholder.jpg'
         };
 
-        try {
-            let response;
-            if (productId) {
-                response = await fetch(`${this.apiUrl}/products/${productId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(product)
-                });
-            } else {
-                response = await fetch(`${this.apiUrl}/products`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(product)
-                });
+        if (productId) {
+            // Обновление существующего товара
+            const index = this.products.findIndex(p => p.id === productId);
+            if (index !== -1) {
+                this.products[index] = { ...this.products[index], ...product };
             }
+        } else {
+            // Добавление нового товара
+            this.products.push(product);
+        }
 
-            if (!response.ok) throw new Error('Ошибка при сохранении товара');
+        this.saveToLocalStorage();
+        this.renderProducts();
+        this.hideModal();
+        this.currentImage = null;
+        showNotification('Товар успешно сохранен');
+    }
 
-            await this.loadProducts();
-            this.hideModal();
-            this.currentImage = null;
-        } catch (error) {
-            console.error('Ошибка при сохранении товара:', error);
-            alert('Ошибка при сохранении товара');
+    deleteProduct(productId) {
+        if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+            this.products = this.products.filter(p => p.id !== productId);
+            this.saveToLocalStorage();
+            this.renderProducts();
+            showNotification('Товар успешно удален');
         }
     }
 
-    async deleteProduct(productId) {
-        if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-            try {
-                const response = await fetch(`${this.apiUrl}/products/${productId}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) throw new Error('Ошибка при удалении товара');
-
-                await this.loadProducts();
-            } catch (error) {
-                console.error('Ошибка при удалении товара:', error);
-                alert('Ошибка при удалении товара');
-            }
-        }
+    saveToLocalStorage() {
+        localStorage.setItem('products', JSON.stringify(this.products));
     }
 
     renderProducts() {
@@ -148,6 +125,18 @@ class ProductManager {
             </tr>
         `).join('');
     }
+}
+
+// Функция для отображения уведомлений
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
 // Инициализация менеджера товаров
