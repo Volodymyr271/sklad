@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Склад - Магазин-Склад</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/warehouse.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Магазин-Склад</div>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="warehouse.html">Склад</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="warehouse">
+            <h1>Наличие на складе</h1>
+            <div class="warehouse-search">
+                <input type="text" id="searchInput" placeholder="Поиск товара...">
+                <button type="button">Найти</button>
+            </div>
+            <div class="warehouse-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Код товара</th>
+                            <th>Наименование</th>
+                            <th>Количество</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>001</td>
+                            <td>Товар 1</td>
+                            <td>150</td>
+                            <td class="status-in-stock">В наличии</td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>Товар 2</td>
+                            <td>0</td>
+                            <td class="status-out-of-stock">Нет в наличии</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Магазин-Склад. Все права защищены.</p>
+    </footer>
+</body>
+</html> 
