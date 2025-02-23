@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Каталог - Магазин-Склад</title>
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/catalog.css">
 </head>
 <body>
     <header>
@@ -15,6 +16,10 @@
                 <li><a href="catalog.html">Каталог</a></li>
                 <li><a href="warehouse.html">Склад</a></li>
                 <li><a href="contacts.html">Контакты</a></li>
+                <li class="cart-icon">
+                    <a href="cart.html">🛒</a>
+                    <span id="cartCounter">0</span>
+                </li>
             </ul>
         </nav>
     </header>
@@ -22,8 +27,31 @@
     <main>
         <section class="catalog">
             <h1>Каталог товаров</h1>
+            <div class="filters">
+                <select id="categoryFilter">
+                    <option value="">Все категории</option>
+                    <option value="electronics">Электроника</option>
+                    <option value="furniture">Мебель</option>
+                    <option value="clothing">Одежда</option>
+                </select>
+                <input type="text" id="searchProducts" placeholder="Поиск товаров...">
+            </div>
             <div class="products-grid">
-                <!-- Здесь будут карточки товаров -->
+                <div class="product-card" data-category="electronics" data-id="1">
+                    <img src="images/product1.jpg" alt="Товар 1">
+                    <h3>Смартфон XYZ</h3>
+                    <p class="price">29 999 ₴</p>
+                    <p class="description">Современный смартфон с отличной камерой</p>
+                    <button class="add-to-cart">В корзину</button>
+                </div>
+                <div class="product-card" data-category="electronics" data-id="2">
+                    <img src="images/product2.jpg" alt="Товар 2">
+                    <h3>Ноутбук ABC</h3>
+                    <p class="price">49 999 ₴</p>
+                    <p class="description">Мощный ноутбук для работы и игр</p>
+                    <button class="add-to-cart">В корзину</button>
+                </div>
+                <!-- Добавьте больше карточек товаров по аналогии -->
             </div>
         </section>
     </main>
@@ -31,5 +59,7 @@
     <footer>
         <p>&copy; 2024 Магазин-Склад. Все права защищены.</p>
     </footer>
+    <script src="scripts/cart.js"></script>
+    <script src="scripts/catalog.js"></script>
 </body>
 </html> 

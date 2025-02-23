@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История заказов - Магазин-Склад</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/orders.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Магазин-Склад</div>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="warehouse.html">Склад</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+                <li class="cart-icon">
+                    <a href="cart.html">🛒</a>
+                    <span id="cartCounter">0</span>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="orders-section">
+            <h1>История заказов</h1>
+            <div id="ordersList" class="orders-list">
+                <!-- Заказы будут добавлены через JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Магазин-Склад. Все права защищены.</p>
+    </footer>
+    <script src="scripts/cart.js"></script>
+    <script src="scripts/orders.js"></script>
+</body>
+</html> 
